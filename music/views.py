@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import MusicSerializer
 from .models import Music
+from music import serializers
 
 @api_view(['GET', 'POST'])
 def music_list(request):
@@ -15,7 +16,16 @@ def music_list(request):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def music_detail(request, pk):
+    try:
+        music = Music.objects.get(pk=pk)
+        serializer = MusicSerializer(music)
+        return Response(serializer.data)
+    except Music.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)    
+    
 
 
 
